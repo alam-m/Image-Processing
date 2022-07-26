@@ -7,8 +7,9 @@ int main ()
 {
     ofstream test_image ("test_img.ppm");
 
-    int x = 10;
-    int y = x;
+    int img_size = 10;
+    int x = img_size;
+    int y = img_size;
 
     test_image << "P3" << '\n';
     test_image << x << ' ' << y << '\n';
