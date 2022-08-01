@@ -1,0 +1,8 @@
+Image processing project.
+
+TODO:
+ - Separate .h files for P1, P2, P3
+ - Histogram
+ - Auto Threshold
+ - Chain code
+ - Edge detection, Canny's, Hough
