@@ -1,29 +1,15 @@
 #include <iostream>
 #include <fstream>
+#include "Image.h"
 
-using namespace std;
-
-int main ()
+int main (int argc, char** argv)
 {
-    ofstream test_image ("test_img.ppm");
+    std::ifstream img_in_file (argv[1]);
 
-    int img_size = 10;
-    int x = img_size;
-    int y = img_size;
-
-    test_image << "P3" << '\n';
-    test_image << x << ' ' << y << '\n';
-    test_image << x << '\n';
-    for (int i = 0; i < x; i++)
-    {
-        for (int j = 0; j < y; j++)
-        {
-            test_image << (i * j) % x << ' ' << (i * j) % x << ' ' << (i * j) % x << ' ';
-        }
-        test_image << '\n';
-    }
-
-    test_image.close();
+    Image i (img_in_file);
+    i.grayscale_weighted();
+    i.print_rgb_matrix();
+    i.print_gs_matrix();
 
     return 0;
 }

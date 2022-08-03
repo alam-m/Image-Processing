@@ -2,6 +2,7 @@ Image processing project.
 
 TODO:
  - Separate .h files for P1, P2, P3
+ - Create own extension for P1, P2, P3 image types
  - Histogram
  - Auto Threshold
  - Chain code
