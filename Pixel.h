@@ -25,16 +25,16 @@ struct Pixel
     }
     std::string print_rgb ()
     { 
-        return std::to_string(red) + ' ' + std::to_string(green) + ' ' + std::to_string(blue);
+        return std::to_string (red) + ' ' + std::to_string (green) + ' ' + std::to_string (blue);
     }
     std::string print_gs ()
     { 
-        return std::to_string(gray);
+        return std::to_string (gray);
     }
-    friend std::ostream& operator<<(std::ostream& os, const Pixel& pixel);
+    friend std::ostream& operator<< (std::ostream& os, const Pixel& pixel);
 };
 
-std::ostream& operator<<(std::ostream& os, const Pixel& pixel)
+std::ostream& operator<< (std::ostream& os, const Pixel& pixel)
 {
     os << pixel.red << ' ' << pixel.green << ' ' << pixel.blue << ' ' << pixel.gray;
     return os;
