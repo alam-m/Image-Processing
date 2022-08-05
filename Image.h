@@ -31,13 +31,15 @@ struct Image
     Image (const std::string& file_in)
     {
         std::ifstream in_file (file_in);
+        if (!in_file.is_open ()) { std::cout << "couldn't open " << file_in << '\n'; exit; }
 
         extract_header (in_file);
         extract_matrix (in_file);
         in_file.close ();
 
-        og_file_name    = file_in;
-        max_gray_val    = 0;
+        og_file_name = file_in.substr (og_file_name.find("images-in/") + 11);
+        og_file_name.resize (og_file_name.length() - 4);
+        max_gray_val = 0;
     }
     ~Image ()
     {
@@ -52,8 +54,8 @@ struct Image
     void extract_header (std::ifstream& file_in)
     {
         file_in >> ppm_type;
-        file_in >> img_height;
         file_in >> img_width;
+        file_in >> img_height;
         file_in >> max_pixel_val;
     }
     // Must be called after extract_header to work.
@@ -103,8 +105,8 @@ struct Image
     }
     void create_histogram ()
     {
-        histogram = new int[max_gray_val];
-        for (int i = 0; i < max_gray_val; i++)
+        histogram = new int[max_gray_val + 1];
+        for (int i = 0; i < max_gray_val + 1; i++)
         {
             histogram[i] = 0;
         }
@@ -162,7 +164,7 @@ struct Image
         std::ofstream file_out ("images-out/" + og_file_name + "_histogram.csv");
 
         file_out << "Gray Value,Count" << '\n';
-        for (int i = 0; i < max_gray_val; i++)
+        for (int i = 0; i < max_gray_val + 1; i++)
         {
             file_out << i << ',' << histogram[i] << '\n';
         }

@@ -19,4 +19,7 @@ int main (int argc, char** argv)
 }
 
 // g++ main.cpp -o main
-// ./main in.ppm out1.ppm out2.ppm out3.csv
+// ./main images-in/landscape.ppm
+// ./main images-in/monument.ppm
+// ./main images-in/skylight.ppm
+// ./main images-in/apollo.ppm
