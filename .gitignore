@@ -1,5 +1,4 @@
 *.exe
 .vs
 .vscode
-in*.ppm
-out*.*
+images-out/*

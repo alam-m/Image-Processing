@@ -1,27 +1,19 @@
 #include <iostream>
-#include <fstream>
 #include "Image.h"
 
 int main (int argc, char** argv)
 {
-    std::ifstream file_in   (argv[1]);
-    std::ofstream file_out1 (argv[2]);
-    std::ofstream file_out2 (argv[3]);
-    std::ofstream file_out3 (argv[4]);
-    std::ofstream file_out4 (argv[5]);
-
-    Image i (file_in);
-    file_in.close ();
+    Image i (argv[1]);
 
     i.grayscale_avg ();
-    i.print_gs_matrix (file_out1);
+    i.print_gs_matrix ();
     i.create_histogram ();
-    i.print_histogram (file_out3);
+    i.print_histogram ();
 
-    i.grayscale_weighted ();
-    i.print_gs_matrix (file_out2);
-    i.create_histogram ();
-    i.print_histogram (file_out3);
+    // i.grayscale_weighted ();
+    // i.print_gs_matrix ();
+    // i.create_histogram ();
+    // i.print_histogram ();
 
     return 0;
 }

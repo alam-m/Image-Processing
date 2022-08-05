@@ -14,24 +14,30 @@
  */
 struct Image
 {
-    // Original Image
-    char    ppm_type[2];
-    int     img_width;
-    int     img_height;
-    int     max_pixel_val;
-    Pixel** pixel_matrix;
+    // Original Image Variables
+    char        ppm_type[2];
+    int         img_width;
+    int         img_height;
+    int         max_pixel_val;
+    Pixel**     pixel_matrix;
 
-
-    int     max_gray_val;
-    int*    histogram;
+    // Processed Variables
+    std::string og_file_name;
+    int         max_gray_val;
+    int*        histogram;
 
     /*----------------------------------------------------------------------------------------------------*/
     // Constructor 
-    Image (std::ifstream& file_in)
+    Image (const std::string& file_in)
     {
-        extract_header (file_in);
-        extract_matrix (file_in);
-        max_gray_val = 0;
+        std::ifstream in_file (file_in);
+
+        extract_header (in_file);
+        extract_matrix (in_file);
+        in_file.close ();
+
+        og_file_name    = file_in;
+        max_gray_val    = 0;
     }
     ~Image ()
     {
@@ -110,12 +116,17 @@ struct Image
             }
         }
     }
+    void auto_threshold ()
+    {
 
+    }
 
     /*----------------------------------------------------------------------------------------------------*/
     // debugging functions
-    void print_rgb_matrix (std::ofstream& file_out)
+    void print_rgb_matrix ()
     {
+        std::ofstream file_out ("images-out/" + og_file_name + "_rgb.ppm");
+
         file_out << "P3" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
         file_out << max_pixel_val << '\n';
@@ -127,9 +138,12 @@ struct Image
             }
             file_out << '\n';
         }
+        file_out.close ();
     }
-    void print_gs_matrix (std::ofstream& file_out)
+    void print_gs_matrix ()
     {
+        std::ofstream file_out ("images-out/" + og_file_name + "_gs.ppm");
+
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
         file_out << max_gray_val << '\n';
@@ -141,14 +155,18 @@ struct Image
             }
             file_out << '\n';
         }
+        file_out.close ();
     }
-    void print_histogram (std::ofstream& file_out)
+    void print_histogram ()
     {
+        std::ofstream file_out ("images-out/" + og_file_name + "_histogram.csv");
+
         file_out << "Gray Value,Count" << '\n';
         for (int i = 0; i < max_gray_val; i++)
         {
             file_out << i << ',' << histogram[i] << '\n';
         }
+        file_out.close ();
     }
 };
 #endif
