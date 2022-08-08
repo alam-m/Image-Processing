@@ -2,6 +2,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -118,16 +119,47 @@ struct Image
             }
         }
     }
-    void auto_threshold ()
+    void threshold (const int& threshold_value)
     {
-
+        for (int i = 0; i < img_height; i++)
+        {
+            for (int j = 0; j < img_width; j++)
+            {
+                if (pixel_matrix[i][j].gray < threshold_value)
+                {
+                    pixel_matrix[i][j].black = 0;
+                }
+                else
+                {
+                    pixel_matrix[i][j].black = 1;
+                }
+            }
+        }
+    }
+    int get_median ()
+    {
+        int* ar = new int [img_height * img_width];
+        int median = 0;
+        int index = 0;
+        for (int i = 0; i < img_height; i++)
+        {
+            for (int j = 0; j < img_width; j++)
+            {
+                ar[index++] = pixel_matrix[i][j].gray;
+            }
+        }
+        std::sort(ar, ar + sizeof(ar) / sizeof (ar[0]));
+        median = ar[(img_height * img_width) / 2];
+        delete[] ar;
+        return median;
     }
 
     /*----------------------------------------------------------------------------------------------------*/
     // debugging functions
-    void print_rgb_matrix ()
+    void print_rgb_matrix () { print_rgb_matrix (og_file_name + "_rgb"); }
+    void print_rgb_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + og_file_name + "_rgb.ppm");
+        std::ofstream file_out ("images-out/" + file_out_name + ".ppm");
 
         file_out << "P3" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
@@ -142,9 +174,11 @@ struct Image
         }
         file_out.close ();
     }
-    void print_gs_matrix ()
+
+    void print_gs_matrix () { print_gs_matrix (og_file_name + "_gs"); }
+    void print_gs_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + og_file_name + "_gs.ppm");
+        std::ofstream file_out ("images-out/" + file_out_name + ".ppm");
 
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
@@ -159,14 +193,35 @@ struct Image
         }
         file_out.close ();
     }
-    void print_histogram ()
+
+    void print_histogram () { print_histogram (og_file_name + "_histogram"); }
+    void print_histogram (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + og_file_name + "_histogram.csv");
+        std::ofstream file_out ("images-out/" + file_out_name + ".csv");
 
         file_out << "Gray Value,Count" << '\n';
         for (int i = 0; i < max_gray_val + 1; i++)
         {
             file_out << i << ',' << histogram[i] << '\n';
+        }
+        file_out.close ();
+    }
+
+    void print_bi_matrix () { print_bi_matrix (og_file_name + "_bi"); }
+    void print_bi_matrix (const std::string& file_out_name)
+    {
+        std::ofstream file_out ("images-out/" + file_out_name + ".ppm");
+
+        file_out << "P2" << '\n';
+        file_out << img_width << ' ' << img_height << '\n';
+        file_out << 1 << '\n';
+        for (int i = 0; i < img_height; i++)
+        {
+            for (int j = 0; j < img_width; j++)
+            {
+                file_out << pixel_matrix[i][j].print_bi() << ' ';
+            }
+            file_out << '\n';
         }
         file_out.close ();
     }

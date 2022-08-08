@@ -6,22 +6,23 @@
 
 struct Pixel
 {
-    int red, green, blue, gray;
+    unsigned short int red, green, blue, gray;
+    bool black;
     Pixel ()
     {
-        red = green = blue = gray = 0;
+        red = green = blue = gray = black = 0;
     }
-    Pixel (const int & gray)
+    Pixel (const unsigned short int& gray)
     {
-        red = green = blue = 0;
+        red = green = blue = black = 0;
         this->gray = gray;
     }
-    Pixel (const int & red, const int & green, const int & blue)
+    Pixel (const unsigned short int& red, const unsigned short int& green, const unsigned short int& blue)
     {
         this->red = red;
         this->green = green;
         this->blue = blue;
-        gray = 0;
+        gray = black = 0;
     }
     std::string print_rgb ()
     { 
@@ -31,12 +32,9 @@ struct Pixel
     { 
         return std::to_string (gray);
     }
-    friend std::ostream& operator<< (std::ostream& os, const Pixel& pixel);
+    std::string print_bi ()
+    { 
+        return std::to_string (black);
+    }
 };
-
-std::ostream& operator<< (std::ostream& os, const Pixel& pixel)
-{
-    os << pixel.red << ' ' << pixel.green << ' ' << pixel.blue << ' ' << pixel.gray;
-    return os;
-}
 #endif
