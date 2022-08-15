@@ -15,6 +15,9 @@
  */
 struct Image
 {
+    // How many extra arrays on each 4 sides of image
+    const int       ARRAY_PADDING_SIZE = 2;
+
     // Original Image Variables
     char            ppm_type[2];
     int             img_width;
@@ -44,7 +47,7 @@ struct Image
     }
     ~Image ()
     {
-        for (int i = 0; i < img_height; i++)
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
         {
             delete[] pixel_matrix[i];
         }
@@ -62,11 +65,10 @@ struct Image
     // Must be called after extract_header to work.
     void extract_matrix (std::ifstream& file_in)
     {
-        pixel_matrix = new Pixel*[img_height];
-        for (int i = 0; i < img_height; i++)
+        init_pixel_matrix ();
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            pixel_matrix[i] = new Pixel[img_width];
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 if (ppm_type[1] == '3')
                 {
@@ -77,30 +79,44 @@ struct Image
             }
         }
     }
+    void init_pixel_matrix ()
+    {
+        pixel_matrix = new Pixel*[img_height + (ARRAY_PADDING_SIZE * 2)];
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            pixel_matrix[i] = new Pixel[img_width + (ARRAY_PADDING_SIZE * 2)];
+        }
+    }
 
     /*----------------------------------------------------------------------------------------------------*/
     // grayscale 
     void grayscale_avg ()
     {
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 Pixel* p = & pixel_matrix[i][j];
                 p->gray = (double)p->red / 3 + (double)p->green / 3 + (double)p->blue / 3;
-                if (p->gray > max_gray_val) { max_gray_val = p->gray; }
+                if (p->gray > max_gray_val) 
+                { 
+                    max_gray_val = p->gray; 
+                }
             }
         }
     }
     void grayscale_weighted ()
     {
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 Pixel* p = & pixel_matrix[i][j];
                 p->gray = (double)p->red * 0.299 + (double)p->green * 0.587 + (double)p->blue * 0.114;
-                if (p->gray > max_gray_val) { max_gray_val = p->gray; }
+                if (p->gray > max_gray_val) 
+                { 
+                    max_gray_val = p->gray; 
+                }
             }
         }
     }
@@ -124,9 +140,9 @@ struct Image
     // For binary image conversion
     void threshold (const int& threshold_value)
     {
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 if (pixel_matrix[i][j].gray < threshold_value)
                 {
@@ -144,9 +160,9 @@ struct Image
         int* ar = new int [img_height * img_width];
         int median = 0;
         int index = 0;
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 ar[index++] = pixel_matrix[i][j].gray;
             }
@@ -176,9 +192,9 @@ struct Image
         file_out << "P3" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
         file_out << max_pixel_val << '\n';
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 file_out << pixel_matrix[i][j].print_rgb() << ' ';
             }
@@ -195,9 +211,9 @@ struct Image
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
         file_out << max_gray_val << '\n';
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 file_out << pixel_matrix[i][j].print_gs() << ' ';
             }
@@ -227,9 +243,9 @@ struct Image
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
         file_out << 1 << '\n';
-        for (int i = 0; i < img_height; i++)
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
-            for (int j = 0; j < img_width; j++)
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 file_out << pixel_matrix[i][j].print_bi() << ' ';
             }

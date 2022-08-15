@@ -5,8 +5,8 @@ int main (int argc, char** argv)
 {
     Image i (argv[1]);
 
-    // i.grayscale_avg ();
-    i.grayscale_weighted ();
+    i.grayscale_avg ();
+    // i.grayscale_weighted ();
     i.print_gs_matrix ();
 
     i.create_histogram ();
@@ -14,7 +14,7 @@ int main (int argc, char** argv)
 
     i.threshold (i.get_median());
     i.print_bi_matrix ();
-
+    
     return 0;
 }
 
