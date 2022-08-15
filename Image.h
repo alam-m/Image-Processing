@@ -16,16 +16,16 @@
 struct Image
 {
     // Original Image Variables
-    char        ppm_type[2];
-    int         img_width;
-    int         img_height;
-    int         max_pixel_val;
-    Pixel**     pixel_matrix;
+    char            ppm_type[2];
+    int             img_width;
+    int             img_height;
+    int             max_pixel_val;
+    Pixel**         pixel_matrix;
 
     // Processed Variables
-    std::string og_file_name;
-    int         max_gray_val;
-    int*        histogram;
+    std::string     og_file_name;
+    int             max_gray_val;
+    int*            histogram;
 
     /*----------------------------------------------------------------------------------------------------*/
     // Constructor 
@@ -56,7 +56,7 @@ struct Image
     {
         file_in >> ppm_type;
         file_in >> img_width;
-        file_in >> img_height;
+        file_in >> img_height; 
         file_in >> max_pixel_val;
     }
     // Must be called after extract_header to work.
@@ -79,7 +79,7 @@ struct Image
     }
 
     /*----------------------------------------------------------------------------------------------------*/
-
+    // grayscale 
     void grayscale_avg ()
     {
         for (int i = 0; i < img_height; i++)
@@ -119,6 +119,9 @@ struct Image
             }
         }
     }
+
+    /*----------------------------------------------------------------------------------------------------*/
+    // For binary image conversion
     void threshold (const int& threshold_value)
     {
         for (int i = 0; i < img_height; i++)
@@ -153,6 +156,15 @@ struct Image
         delete[] ar;
         return median;
     }
+
+    /*----------------------------------------------------------------------------------------------------*/
+    // Gaussian mask
+
+    /*----------------------------------------------------------------------------------------------------*/
+    // Canny Edge detection
+
+    /*----------------------------------------------------------------------------------------------------*/
+    // Hough Transform
 
     /*----------------------------------------------------------------------------------------------------*/
     // debugging functions
