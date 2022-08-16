@@ -14,6 +14,9 @@ int main (int argc, char** argv)
 
     i.threshold (i.get_median());
     i.print_bi_matrix ();
+
+    i.mirror_frame ();
+    i.print_matrix ();
     
     return 0;
 }
@@ -23,3 +26,4 @@ int main (int argc, char** argv)
 // ./main images-in/monument.ppm
 // ./main images-in/skylight.ppm
 // ./main images-in/apollo.ppm
+// ./main images-in/in.ppm

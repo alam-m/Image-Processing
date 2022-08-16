@@ -175,6 +175,38 @@ struct Image
 
     /*----------------------------------------------------------------------------------------------------*/
     // Gaussian mask
+    void mirror_frame ()
+    {
+        int count = 1;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                pixel_matrix[i + ARRAY_PADDING_SIZE][j + ARRAY_PADDING_SIZE].gray = count++;
+            }
+        }
+
+        // sides
+        for (int i = 0; i < ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_height + ARRAY_PADDING_SIZE; j++)
+            {
+                // left
+                pixel_matrix[j][ARRAY_PADDING_SIZE - 1 - i] = pixel_matrix[j][ARRAY_PADDING_SIZE + i];
+                // right
+                pixel_matrix[j][ARRAY_PADDING_SIZE + img_width + i] = pixel_matrix[j][ARRAY_PADDING_SIZE + img_width - 1 - i];
+            }
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                // top
+                pixel_matrix[ARRAY_PADDING_SIZE - 1 - i][j] = pixel_matrix[ARRAY_PADDING_SIZE + i][j];
+                // bottom
+                pixel_matrix[ARRAY_PADDING_SIZE + img_height + i][j] = pixel_matrix[ARRAY_PADDING_SIZE + img_height - 1 - i][j];
+            }
+        }
+        // corners
+    
+    }
 
     /*----------------------------------------------------------------------------------------------------*/
     // Canny Edge detection
@@ -253,5 +285,21 @@ struct Image
         }
         file_out.close ();
     }
+
+    void print_matrix () { print_matrix (og_file_name + "_test"); }
+    void print_matrix (const std::string& file_out_name)
+    {
+        std::ofstream file_out ("images-out/" + file_out_name + ".txt");
+        for (int i = 0; i < img_height + ARRAY_PADDING_SIZE * 2; i++)
+        {
+            for (int j = 0; j < img_width + ARRAY_PADDING_SIZE * 2; j++)
+            {
+                file_out << pixel_matrix[i][j].print_gs() << ' ';
+            }
+            file_out << '\n';
+        }
+        file_out.close ();
+    }
+
 };
 #endif
