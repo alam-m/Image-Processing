@@ -16,7 +16,7 @@
 struct Image
 {
     // How many extra arrays on each 4 sides of image
-    const int       ARRAY_PADDING_SIZE = 2;
+    const int       ARRAY_PADDING_SIZE = 3;
 
     // Original Image Variables
     char            ppm_type[2];
@@ -167,7 +167,7 @@ struct Image
                 ar[index++] = pixel_matrix[i][j].gray;
             }
         }
-        std::sort(ar, ar + sizeof(ar) / sizeof (ar[0]));
+        std::sort (ar, ar + sizeof (ar) / sizeof (ar[0]));
         median = ar[(img_height * img_width) / 2];
         delete[] ar;
         return median;
@@ -175,16 +175,38 @@ struct Image
 
     /*----------------------------------------------------------------------------------------------------*/
     // Gaussian mask
-    void mirror_frame ()
+    void gaussian_smooth ()
     {
-        int count = 1;
-        for (int i = 0; i < 3; i++)
+        // Gaussian mask array I got online
+        int mask[5][5] = 
         {
-            for (int j = 0; j < 3; j++)
+             {1,  4,  7,  4, 1}
+            ,{4, 16, 26, 16, 4}
+            ,{7, 26, 41, 26, 7}
+            ,{4, 16, 26, 16, 7}
+            ,{1,  4,  7,  4, 1}
+        };
+        int weight = get_weight (mask, 5, 5);
+
+
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                pixel_matrix[i + ARRAY_PADDING_SIZE][j + ARRAY_PADDING_SIZE].gray = count++;
+
             }
         }
+    }
+    void mirror_frame ()
+    {
+        // int count = 1;
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     for (int j = 0; j < 3; j++)
+        //     {
+        //         pixel_matrix[i + ARRAY_PADDING_SIZE][j + ARRAY_PADDING_SIZE].gray = count++;
+        //     }
+        // }
 
         // sides
         for (int i = 0; i < ARRAY_PADDING_SIZE; i++)
@@ -205,7 +227,45 @@ struct Image
             }
         }
         // corners
-    
+        for (int i = 0; i < ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = 0; j < ARRAY_PADDING_SIZE; j++)
+            {
+                // top left
+                pixel_matrix[ARRAY_PADDING_SIZE - 1 - j][ARRAY_PADDING_SIZE - 1 - i] = pixel_matrix[ARRAY_PADDING_SIZE + i][ARRAY_PADDING_SIZE + j];
+                // top right
+                pixel_matrix[ARRAY_PADDING_SIZE - 1 - j][ARRAY_PADDING_SIZE + img_width + i] = pixel_matrix[ARRAY_PADDING_SIZE + i][ARRAY_PADDING_SIZE + img_width - 1 - j];
+                // bottom left
+                // pixel_matrix[][] = pixel_matrix[][];
+                // bottom right
+                // pixel_matrix[][] = pixel_matrix[][];
+            }
+        }
+    }
+    int get_weight (int arr_2D[5][5], const int& rows, const int& columns)
+    {
+        int weight = 0;
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                weight += arr_2D[i][j];
+            }
+        }
+        return weight;
+    }
+    void convolution (int mask[5][5], int i, int j)
+    {
+        i -= 2;
+        j -= 2;
+
+        for (i; i < 5; i++)
+        {
+            for (j; j < 5; j++)
+            {
+                
+            }
+        }
     }
 
     /*----------------------------------------------------------------------------------------------------*/
