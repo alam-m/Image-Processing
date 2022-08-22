@@ -16,7 +16,9 @@ int main (int argc, char** argv)
     i.print_bi_matrix ();
 
     i.mirror_frame ();
-    i.print_matrix ();
+    i.gaussian_smooth ();
+    i.print_gs_matrix ("landscape smooth");
+    // i.print_matrix ();
     
     return 0;
 }

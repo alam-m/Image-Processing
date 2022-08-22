@@ -188,14 +188,38 @@ struct Image
         };
         int weight = get_weight (mask, 5, 5);
 
+        // to hold the temporary smoothed values
+        int** temp;
+        temp = new int*[img_height + (ARRAY_PADDING_SIZE * 2)];
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            temp[i] = new int[img_width + (ARRAY_PADDING_SIZE * 2)];
+        }
 
+        // convolute
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-
+                temp[i][j] = convolution (mask, i, j) / weight;
             }
         }
+
+        // move the values over to pixel matrix
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                pixel_matrix[i][j].gray = temp[i][j];
+            }
+        }
+
+        // clean up temp array
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            delete[] temp[i];
+        }
+        delete temp;
     }
     void mirror_frame ()
     {
@@ -256,25 +280,30 @@ struct Image
         }
         return weight;
     }
-    void convolution (int mask[5][5], int i, int j)
+    int convolution (int mask[5][5], const int& i, const int& j)
     {
-        i -= 2;
-        j -= 2;
-
-        for (i; i < 5; i++)
+        int sum = 0;
+        int x1 = i - ARRAY_PADDING_SIZE;
+        for (int x2 = 0; x2 < 5; x2++)
         {
-            for (j; j < 5; j++)
+            int y1 = j - ARRAY_PADDING_SIZE;
+            for (int y2 = 0; y2 < 5; y2++)
             {
-                
+                sum += pixel_matrix[x1][y1].gray * mask[x2][y2];
+                y1++;
             }
+            x1++;
         }
+        return sum;
     }
 
     /*----------------------------------------------------------------------------------------------------*/
     // Canny Edge detection
 
+
     /*----------------------------------------------------------------------------------------------------*/
     // Hough Transform
+    
 
     /*----------------------------------------------------------------------------------------------------*/
     // debugging functions
