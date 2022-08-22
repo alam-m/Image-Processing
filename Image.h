@@ -16,7 +16,7 @@
 struct Image
 {
     // How many extra arrays on each 4 sides of image
-    const int       ARRAY_PADDING_SIZE = 3;
+    const int       ARRAY_PADDING_SIZE = 2;
 
     // Original Image Variables
     char            ppm_type[2];
@@ -199,15 +199,6 @@ struct Image
     }
     void mirror_frame ()
     {
-        // int count = 1;
-        // for (int i = 0; i < 3; i++)
-        // {
-        //     for (int j = 0; j < 3; j++)
-        //     {
-        //         pixel_matrix[i + ARRAY_PADDING_SIZE][j + ARRAY_PADDING_SIZE].gray = count++;
-        //     }
-        // }
-
         // sides
         for (int i = 0; i < ARRAY_PADDING_SIZE; i++)
         {
@@ -226,20 +217,31 @@ struct Image
                 pixel_matrix[ARRAY_PADDING_SIZE + img_height + i][j] = pixel_matrix[ARRAY_PADDING_SIZE + img_height - 1 - i][j];
             }
         }
+        
         // corners
-        for (int i = 0; i < ARRAY_PADDING_SIZE; i++)
+        // top left
+        rotate_matrix_90_clockwise (ARRAY_PADDING_SIZE             , 0                             , 0                              , 0);
+        // top right
+        rotate_matrix_90_clockwise (0                              , img_width                     , 0                              , img_width + ARRAY_PADDING_SIZE);
+        // bottom left
+        rotate_matrix_90_clockwise (img_height + ARRAY_PADDING_SIZE, ARRAY_PADDING_SIZE            , img_height + ARRAY_PADDING_SIZE, 0                             );
+        // bottom right
+        rotate_matrix_90_clockwise (img_height                     , img_width + ARRAY_PADDING_SIZE, img_height + ARRAY_PADDING_SIZE, img_width + ARRAY_PADDING_SIZE);
+    }
+    void rotate_matrix_90_clockwise (const int& i1, const int& j1, const int& i2, const int& j2)
+    {
+        int x1 = i1;
+        int y2 = j2 + ARRAY_PADDING_SIZE - 1;
+        for (; x1 < i1 + ARRAY_PADDING_SIZE; x1++)
         {
-            for (int j = 0; j < ARRAY_PADDING_SIZE; j++)
+            int y1 = j1;
+            int x2 = i2;
+            for (; y1 < j1 + ARRAY_PADDING_SIZE; y1++)
             {
-                // top left
-                pixel_matrix[ARRAY_PADDING_SIZE - 1 - j][ARRAY_PADDING_SIZE - 1 - i] = pixel_matrix[ARRAY_PADDING_SIZE + i][ARRAY_PADDING_SIZE + j];
-                // top right
-                pixel_matrix[ARRAY_PADDING_SIZE - 1 - j][ARRAY_PADDING_SIZE + img_width + i] = pixel_matrix[ARRAY_PADDING_SIZE + i][ARRAY_PADDING_SIZE + img_width - 1 - j];
-                // bottom left
-                // pixel_matrix[][] = pixel_matrix[][];
-                // bottom right
-                // pixel_matrix[][] = pixel_matrix[][];
+                pixel_matrix[x2][y2] = pixel_matrix[x1][y1];
+                x2++;
             }
+            y2--;
         }
     }
     int get_weight (int arr_2D[5][5], const int& rows, const int& columns)
