@@ -298,8 +298,28 @@ struct Image
     }
 
     /*----------------------------------------------------------------------------------------------------*/
-    // Canny Edge detection
-    
+    // Sobel Edge detection
+    void edge_detect_sobel ()
+    {
+        // Sobel mask array I got online
+        int v_mask[5][5] = 
+        {
+             {-1, -2,  0,  2,  1}
+            ,{-2, -3,  0,  3,  2}
+            ,{-3, -5,  0,  5,  3}
+            ,{-2, -3,  0,  3,  2}
+            ,{-1, -2,  0,  2,  1}
+        };
+        int h_mask[5][5] = 
+        {
+             { 1,  2,  3,  2,  1}
+            ,{ 2,  3,  5,  3,  2}
+            ,{ 0,  0,  0,  0,  0}
+            ,{-2, -3, -5, -3, -2}
+            ,{-1, -2, -3, -2, -1}
+        };
+
+    }
 
     /*----------------------------------------------------------------------------------------------------*/
     // Hough Transform
@@ -348,7 +368,7 @@ struct Image
     void print_histogram () { print_histogram (og_file_name + "_histogram"); }
     void print_histogram (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + file_out_name + ".csv");
+        std::ofstream file_out ("graphs-out/" + file_out_name + ".csv");
 
         file_out << "Gray Value,Count" << '\n';
         for (int i = 0; i < max_gray_val + 1; i++)
