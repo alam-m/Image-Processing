@@ -301,8 +301,20 @@ struct Image
     // Sobel Edge detection
     void edge_detect_sobel ()
     {
-        // Sobel mask array I got online
-        int v_mask[5][5] = 
+        // Sobel mask arrays I got online
+        int v_mask_3x3[3][3] = 
+        {
+             { 1,  2,  1}
+            ,{ 0,  0,  0}
+            ,{-1, -2, -1}
+        };
+        int v_mask_3x3[3][3] = 
+        {
+             {-1,  0,  1}
+            ,{-2,  0,  1}
+            ,{-1,  0,  1}
+        };
+        int v_mask_5x5[5][5] = 
         {
              {-1, -2,  0,  2,  1}
             ,{-2, -3,  0,  3,  2}
@@ -310,7 +322,7 @@ struct Image
             ,{-2, -3,  0,  3,  2}
             ,{-1, -2,  0,  2,  1}
         };
-        int h_mask[5][5] = 
+        int h_mask_5x5[5][5] = 
         {
              { 1,  2,  3,  2,  1}
             ,{ 2,  3,  5,  3,  2}
