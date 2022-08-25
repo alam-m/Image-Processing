@@ -201,7 +201,7 @@ struct Image
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                temp[i][j] = convolution (mask, i, j) / weight;
+                temp[i][j] = convolution_5x5 (mask, i, j) / weight;
             }
         }
 
@@ -280,13 +280,13 @@ struct Image
         }
         return weight;
     }
-    int convolution (int mask[5][5], const int& i, const int& j)
+    int convolution_5x5 (int mask[5][5], const int& i, const int& j)
     {
         int sum = 0;
-        int x1 = i - ARRAY_PADDING_SIZE;
+        int x1 = i - 2;
         for (int x2 = 0; x2 < 5; x2++)
         {
-            int y1 = j - ARRAY_PADDING_SIZE;
+            int y1 = j - 2;
             for (int y2 = 0; y2 < 5; y2++)
             {
                 sum += pixel_matrix[x1][y1].gray * mask[x2][y2];
@@ -304,15 +304,15 @@ struct Image
         // Sobel mask arrays I got online
         int v_mask_3x3[3][3] = 
         {
-             { 1,  2,  1}
-            ,{ 0,  0,  0}
-            ,{-1, -2, -1}
-        };
-        int v_mask_3x3[3][3] = 
-        {
              {-1,  0,  1}
             ,{-2,  0,  1}
             ,{-1,  0,  1}
+        };
+        int h_mask_3x3[3][3] = 
+        {
+             { 1,  2,  1}
+            ,{ 0,  0,  0}
+            ,{-1, -2, -1}
         };
         int v_mask_5x5[5][5] = 
         {
@@ -331,6 +331,84 @@ struct Image
             ,{-1, -2, -3, -2, -1}
         };
 
+        // holds vertical and horizontal Sobel's
+        int** v_temp;
+        int** h_temp;
+        v_temp = new int*[img_height + (ARRAY_PADDING_SIZE * 2)];
+        h_temp = new int*[img_height + (ARRAY_PADDING_SIZE * 2)];
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            v_temp[i] = new int[img_width + (ARRAY_PADDING_SIZE * 2)];
+            h_temp[i] = new int[img_width + (ARRAY_PADDING_SIZE * 2)];
+        }
+
+        // convolute
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                v_temp[i][j] = convolution_3x3 (v_mask_3x3, i, j);
+                h_temp[i][j] = convolution_3x3 (h_mask_3x3, i, j);
+            }
+        }
+
+        // move the values over to pixel matrix
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                pixel_matrix[i][j].gray = v_temp[i][j];
+            }
+        }
+        print_gs_matrix (og_file_name + "_sobel_v");
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                pixel_matrix[i][j].gray = h_temp[i][j];
+            }
+        }
+        print_gs_matrix (og_file_name + "_sobel_h");
+        int max = 0, max_v = 0, max_h = 0;
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                pixel_matrix[i][j].gray = abs (v_temp[i][j]) + abs (h_temp[i][j]);
+                abs (v_temp[i][j]) + abs (h_temp[i][j]) > max ? max = abs (v_temp[i][j]) + abs (h_temp[i][j]) : 0;
+                v_temp[i][j] > max_v ? max_v = v_temp[i][j] : 0;
+                h_temp[i][j] > max_h ? max_h = h_temp[i][j] : 0;
+            }
+        }
+        print_gs_matrix (og_file_name + "_sobel");
+        std::cout << max << '\n';
+        std::cout << max_v << '\n';
+        std::cout << max_h << '\n';
+
+        // clean up temp arrays
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            delete[] v_temp[i];
+            delete[] h_temp[i];
+        }
+        delete v_temp;
+        delete h_temp;
+    }
+    int convolution_3x3 (int mask[3][3], const int& i, const int& j)
+    {
+        int sum = 0;
+        int x1 = i - 1;
+        for (int x2 = 0; x2 < 3; x2++)
+        {
+            int y1 = j - 1;
+            for (int y2 = 0; y2 < 3; y2++)
+            {
+                sum += pixel_matrix[x1][y1].gray * mask[x2][y2];
+                y1++;
+            }
+            x1++;
+        }
+        return sum;
     }
 
     /*----------------------------------------------------------------------------------------------------*/
