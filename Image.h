@@ -347,43 +347,45 @@ struct Image
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                v_temp[i][j] = convolution_3x3 (v_mask_3x3, i, j);
-                h_temp[i][j] = convolution_3x3 (h_mask_3x3, i, j);
+                v_temp[i][j] = convolution_5x5 (v_mask_5x5, i, j);
+                h_temp[i][j] = convolution_5x5 (h_mask_5x5, i, j);
             }
         }
 
         // move the values over to pixel matrix
+        int max_v = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 pixel_matrix[i][j].gray = v_temp[i][j];
+                v_temp[i][j] > max_v ? max_v = v_temp[i][j] : 0;
             }
         }
+        max_gray_val = max_v;
         print_gs_matrix (og_file_name + "_sobel_v");
+        int max_h = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 pixel_matrix[i][j].gray = h_temp[i][j];
+                h_temp[i][j] > max_h ? max_h = h_temp[i][j] : 0;
             }
         }
+        max_gray_val = max_h;
         print_gs_matrix (og_file_name + "_sobel_h");
-        int max = 0, max_v = 0, max_h = 0;
+        int max = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 pixel_matrix[i][j].gray = abs (v_temp[i][j]) + abs (h_temp[i][j]);
                 abs (v_temp[i][j]) + abs (h_temp[i][j]) > max ? max = abs (v_temp[i][j]) + abs (h_temp[i][j]) : 0;
-                v_temp[i][j] > max_v ? max_v = v_temp[i][j] : 0;
-                h_temp[i][j] > max_h ? max_h = h_temp[i][j] : 0;
             }
         }
+        max_gray_val = max;
         print_gs_matrix (og_file_name + "_sobel");
-        std::cout << max << '\n';
-        std::cout << max_v << '\n';
-        std::cout << max_h << '\n';
 
         // clean up temp arrays
         for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)

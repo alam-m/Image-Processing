@@ -15,9 +15,9 @@ int main (int argc, char** argv)
     i.print_bi_matrix ();
 
     i.mirror_frame ();
-    
-    // i.gaussian_smooth ();
-    // i.print_gs_matrix ("landscape_gs_smooth");
+
+    i.gaussian_smooth ();
+    i.print_gs_matrix ("landscape_gs_smooth");
     // i.print_matrix ();
 
     i.edge_detect_sobel ();
