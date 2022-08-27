@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+// #include <math.h>
 #include "Pixel.h"
 
 /**
@@ -92,15 +93,37 @@ struct Image
     // grayscale 
     void grayscale_avg ()
     {
-        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        // remove me
+        std::cout << ppm_type << "\n";
+        if (ppm_type[1] == '2')
         {
-            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            std::cout << "Got here\n";
+            for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
             {
-                Pixel* p = & pixel_matrix[i][j];
-                p->gray = (double)p->red / 3 + (double)p->green / 3 + (double)p->blue / 3;
-                if (p->gray > max_gray_val) 
-                { 
-                    max_gray_val = p->gray; 
+                for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+                {
+                    Pixel* p = & pixel_matrix[i][j];
+                    p->gray = p->blue;
+                    if (p->gray > max_gray_val) 
+                    { 
+                        max_gray_val = p->gray; 
+                    }
+                }
+            }
+        }
+
+        else 
+        {
+            for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+            {
+                for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+                {
+                    Pixel* p = & pixel_matrix[i][j];
+                    p->gray = (double)p->red / 3 + (double)p->green / 3 + (double)p->blue / 3;
+                    if (p->gray > max_gray_val) 
+                    { 
+                        max_gray_val = p->gray; 
+                    }
                 }
             }
         }
@@ -220,6 +243,8 @@ struct Image
             delete[] temp[i];
         }
         delete temp;
+
+        print_gs_matrix (og_file_name + "_gs_smooth");
     }
     void mirror_frame ()
     {
@@ -364,6 +389,7 @@ struct Image
         }
         max_gray_val = max_v;
         print_gs_matrix (og_file_name + "_sobel_v");
+
         int max_h = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
@@ -375,13 +401,16 @@ struct Image
         }
         max_gray_val = max_h;
         print_gs_matrix (og_file_name + "_sobel_h");
+
         int max = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                pixel_matrix[i][j].gray = abs (v_temp[i][j]) + abs (h_temp[i][j]);
-                abs (v_temp[i][j]) + abs (h_temp[i][j]) > max ? max = abs (v_temp[i][j]) + abs (h_temp[i][j]) : 0;
+                int dist = abs (v_temp[i][j]) + abs (h_temp[i][j]);
+                // int dist = sqrt ( pow (v_temp[i][j], 2) + pow (h_temp[i][j], 2));
+                pixel_matrix[i][j].gray = dist;
+                dist > max ? max = dist : 0;
             }
         }
         max_gray_val = max;
@@ -412,6 +441,11 @@ struct Image
         }
         return sum;
     }
+
+    /*----------------------------------------------------------------------------------------------------*/
+    // Canny Edge
+
+
 
     /*----------------------------------------------------------------------------------------------------*/
     // Hough Transform

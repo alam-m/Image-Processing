@@ -17,7 +17,6 @@ int main (int argc, char** argv)
     i.mirror_frame ();
 
     i.gaussian_smooth ();
-    i.print_gs_matrix ("landscape_gs_smooth");
     // i.print_matrix ();
 
     i.edge_detect_sobel ();
@@ -31,3 +30,4 @@ int main (int argc, char** argv)
 // ./main images-in/skylight.ppm
 // ./main images-in/apollo.ppm
 // ./main images-in/in.ppm
+// ./main images-in/canny_test.ppm

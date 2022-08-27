@@ -7,6 +7,6 @@ TODO:
  - Auto Threshold               ✔
  - Convert to Binary            ✔
  - Turn to gray scale           ✔
- - Smooth image w/ Gaussian
+ - Smooth image w/ Gaussian     ✔
  - Canny's edge detect
  - Hough Transform
