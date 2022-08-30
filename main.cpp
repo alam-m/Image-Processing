@@ -24,7 +24,7 @@ int main (int argc, char** argv)
     return 0;
 }
 
-// g++ main.cpp -o main
+// g++ main.cpp -o main -std=c++17
 // ./main images-in/landscape.ppm
 // ./main images-in/monument.ppm
 // ./main images-in/skylight.ppm

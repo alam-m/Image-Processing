@@ -3,6 +3,7 @@
 #define IMAGE_H
 
 #include <algorithm>    // sort(), planning on just making my own sorting algo
+#include <filesystem>   // create_directory()
 #include <fstream>      // ifstream, ofstream
 #include <iostream>     // cout
 #include <math.h>       // sqrt(), pow()
@@ -454,6 +455,7 @@ struct Image
     void print_rgb_matrix () { print_rgb_matrix (og_file_name + "_rgb"); }
     void print_rgb_matrix (const std::string& file_out_name)
     {
+        std::filesystem::create_directory ("images-out/" + og_file_name);
         std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P3" << '\n';
@@ -473,10 +475,8 @@ struct Image
     void print_gs_matrix () { print_gs_matrix (og_file_name + "_gs"); }
     void print_gs_matrix (const std::string& file_out_name)
     {
-        std::fstream file_out;
-        file_out.open ("images-out/" + og_file_name + "/" + file_out_name + ".ppm", std::fstream::out);
-        if (!file_out.is_open()) { std::cout << "error, can't open file\n"; }
-        // std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
+        std::filesystem::create_directory ("images-out/" + og_file_name);
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
@@ -495,6 +495,7 @@ struct Image
     void print_histogram () { print_histogram (og_file_name + "_histogram"); }
     void print_histogram (const std::string& file_out_name)
     {
+        std::filesystem::create_directory ("graphs-out/");
         std::ofstream file_out ("graphs-out/" + file_out_name + ".csv");
 
         file_out << "Gray Value,Count" << '\n';
@@ -508,6 +509,7 @@ struct Image
     void print_bi_matrix () { print_bi_matrix (og_file_name + "_bi"); }
     void print_bi_matrix (const std::string& file_out_name)
     {
+        std::filesystem::create_directory ("images-out/" + og_file_name);
         std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P2" << '\n';
@@ -527,6 +529,7 @@ struct Image
     void print_matrix () { print_matrix (og_file_name + "_test"); }
     void print_matrix (const std::string& file_out_name)
     {
+        std::filesystem::create_directory ("images-out/" + og_file_name);
         std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".txt");
         for (int i = 0; i < img_height + ARRAY_PADDING_SIZE * 2; i++)
         {
