@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-// #include <math.h>
+#include <math.h>
 #include "Pixel.h"
 
 /**
@@ -94,10 +94,8 @@ struct Image
     void grayscale_avg ()
     {
         // remove me
-        std::cout << ppm_type << "\n";
         if (ppm_type[1] == '2')
         {
-            std::cout << "Got here\n";
             for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
             {
                 for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
@@ -407,8 +405,8 @@ struct Image
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                int dist = abs (v_temp[i][j]) + abs (h_temp[i][j]);
-                // int dist = sqrt ( pow (v_temp[i][j], 2) + pow (h_temp[i][j], 2));
+                // int dist = abs (v_temp[i][j]) + abs (h_temp[i][j]);
+                int dist = sqrt (pow (v_temp[i][j], 2) + pow (h_temp[i][j], 2));
                 pixel_matrix[i][j].gray = dist;
                 dist > max ? max = dist : 0;
             }
@@ -456,7 +454,7 @@ struct Image
     void print_rgb_matrix () { print_rgb_matrix (og_file_name + "_rgb"); }
     void print_rgb_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + file_out_name + ".ppm");
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P3" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
@@ -475,7 +473,7 @@ struct Image
     void print_gs_matrix () { print_gs_matrix (og_file_name + "_gs"); }
     void print_gs_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + file_out_name + ".ppm");
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
@@ -507,7 +505,7 @@ struct Image
     void print_bi_matrix () { print_bi_matrix (og_file_name + "_bi"); }
     void print_bi_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + file_out_name + ".ppm");
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
@@ -526,7 +524,7 @@ struct Image
     void print_matrix () { print_matrix (og_file_name + "_test"); }
     void print_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + file_out_name + ".txt");
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".txt");
         for (int i = 0; i < img_height + ARRAY_PADDING_SIZE * 2; i++)
         {
             for (int j = 0; j < img_width + ARRAY_PADDING_SIZE * 2; j++)
