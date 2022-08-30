@@ -2,11 +2,11 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <math.h>
+#include <algorithm>    // sort(), planning on just making my own sorting algo
+#include <fstream>      // ifstream, ofstream
+#include <iostream>     // cout
+#include <math.h>       // sqrt(), pow()
+#include <string>       // string
 #include "Pixel.h"
 
 /**
@@ -473,7 +473,10 @@ struct Image
     void print_gs_matrix () { print_gs_matrix (og_file_name + "_gs"); }
     void print_gs_matrix (const std::string& file_out_name)
     {
-        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
+        std::fstream file_out;
+        file_out.open ("images-out/" + og_file_name + "/" + file_out_name + ".ppm", std::fstream::out);
+        if (!file_out.is_open()) { std::cout << "error, can't open file\n"; }
+        // std::ofstream file_out ("images-out/" + og_file_name + "/" + file_out_name + ".ppm");
 
         file_out << "P2" << '\n';
         file_out << img_width << ' ' << img_height << '\n';
