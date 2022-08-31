@@ -415,14 +415,7 @@ struct Image
         max_gray_val = max;
         print_gs_matrix (og_file_name + "_sobel");
 
-        // clean up temp arrays
-        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
-        {
-            delete[] v_temp[i];
-            delete[] h_temp[i];
-        }
-        delete v_temp;
-        delete h_temp;
+        edge_detect_canny (v_temp, h_temp);
     }
     int convolution_3x3 (int mask[3][3], const int& i, const int& j)
     {
@@ -443,8 +436,44 @@ struct Image
 
     /*----------------------------------------------------------------------------------------------------*/
     // Canny Edge
+    void edge_detect_canny (int** v_temp, int** h_temp)
+    {
+        const double PI = 3.14159265;
 
+        //init angles array
+        int** gradient_angles = new int*[img_height + (ARRAY_PADDING_SIZE * 2)];
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            gradient_angles[i] = new int[img_width + (ARRAY_PADDING_SIZE * 2)];
+        }
 
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                if (pixel_matrix[i][j].gray > 0)
+                {
+                    gradient_angles[i][j] = atan2 (v_temp[i][j], h_temp[i][j]) * 180 / PI;
+                }
+                else
+                {
+                    gradient_angles[i][j] = -1;
+                }
+            }
+        }
+        print_debug_matrix ("gradient_angles", gradient_angles, 0, img_height + (ARRAY_PADDING_SIZE * 2), 0, img_width + (ARRAY_PADDING_SIZE * 2));
+
+        // clean up temp arrays
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            delete[] v_temp[i];
+            delete[] h_temp[i];
+            delete[] gradient_angles[i];
+        }
+        delete[] v_temp;
+        delete[] h_temp;
+        delete[] gradient_angles;
+    }
 
     /*----------------------------------------------------------------------------------------------------*/
     // Hough Transform
@@ -536,6 +565,20 @@ struct Image
             for (int j = 0; j < img_width + ARRAY_PADDING_SIZE * 2; j++)
             {
                 file_out << pixel_matrix[i][j].print_gs() << ' ';
+            }
+            file_out << '\n';
+        }
+        file_out.close ();
+    }
+
+    void print_debug_matrix (const std::string& file_name, int** arr, const int& i_start, const int& i_end, const int& j_start, const int& j_end)
+    {
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_name + "_" + og_file_name + ".txt");
+        for (int i = i_start; i < i_end; i++)
+        {
+            for (int j = j_start; j < j_end; j++)
+            {
+                file_out << arr[i][j] << ' ';
             }
             file_out << '\n';
         }

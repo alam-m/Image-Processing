@@ -4,8 +4,8 @@ int main (int argc, char** argv)
 {
     Image i (argv[1]);
 
-    i.grayscale_avg ();
-    // i.grayscale_weighted ();
+    // i.grayscale_avg ();
+    i.grayscale_weighted ();
     i.print_gs_matrix ();
 
     i.create_histogram ();
