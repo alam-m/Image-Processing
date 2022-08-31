@@ -6,6 +6,7 @@
 #include <filesystem>   // create_directory()
 #include <fstream>      // ifstream, ofstream
 #include <iostream>     // cout
+#include <iomanip>
 #include <math.h>       // sqrt(), pow()
 #include <string>       // string
 #include "Pixel.h"
@@ -573,12 +574,13 @@ struct Image
 
     void print_debug_matrix (const std::string& file_name, int** arr, const int& i_start, const int& i_end, const int& j_start, const int& j_end)
     {
-        std::ofstream file_out ("images-out/" + og_file_name + "/" + file_name + "_" + og_file_name + ".txt");
+        int buffer = 4;
+        std::ofstream file_out ("images-out/" + og_file_name + "/" + og_file_name + "_" + file_name + ".txt");
         for (int i = i_start; i < i_end; i++)
         {
             for (int j = j_start; j < j_end; j++)
             {
-                file_out << arr[i][j] << ' ';
+                file_out << std::right << std::setw(buffer) << arr[i][j] << ' ';
             }
             file_out << '\n';
         }
