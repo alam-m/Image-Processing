@@ -442,19 +442,26 @@ struct Image
         const double PI = 3.14159265;
 
         //init angles array
-        int** gradient_angles = new int*[img_height + (ARRAY_PADDING_SIZE * 2)];
+        double** gradient_angles = new double*[img_height + (ARRAY_PADDING_SIZE * 2)];
         for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
         {
-            gradient_angles[i] = new int[img_width + (ARRAY_PADDING_SIZE * 2)];
+            gradient_angles[i] = new double[img_width + (ARRAY_PADDING_SIZE * 2)];
+            for (int j = 0; j < img_width + (ARRAY_PADDING_SIZE * 2); j++)
+            {
+                gradient_angles[i][j] = -1;
+            }
         }
 
+        // calculate angle matrix
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 if (pixel_matrix[i][j].gray > 0)
                 {
-                    gradient_angles[i][j] = atan2 (v_temp[i][j], h_temp[i][j]) * 180 / PI;
+                    double angle_in_degrees = atan2 (v_temp[i][j], h_temp[i][j]) * 180 / PI;
+                    // if (angle_in_degrees < 0) { angle_in_degrees += 180; }
+                    gradient_angles[i][j] = angle_in_degrees;
                 }
                 else
                 {
@@ -464,7 +471,43 @@ struct Image
         }
         print_debug_matrix ("gradient_angles", gradient_angles, 0, img_height + (ARRAY_PADDING_SIZE * 2), 0, img_width + (ARRAY_PADDING_SIZE * 2));
 
-        // clean up temp arrays
+        //
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                double this_angle = gradient_angles[i][j];
+                double neg_dir;
+                double pos_dir;
+                if ((0 <= this_angle && this_angle < 22.5) || (157.5 < this_angle && this_angle <= 180))
+                {
+                    neg_dir = gradient_angles[i][j - 1];
+                    pos_dir = gradient_angles[i][j + 1];
+                }
+                else if (22.5 <= this_angle && this_angle < 67.5)
+                {
+                    neg_dir = gradient_angles[i - 1][j - 1];
+                    pos_dir = gradient_angles[i + 1][j + 1];
+                }
+                else if (67.5 <= this_angle && this_angle < 112.5)
+                {
+                    neg_dir = gradient_angles[i][j];
+                    pos_dir = gradient_angles[i][j];
+                }
+                else if (112.5 <= this_angle && this_angle < 157.5)
+                {
+                    neg_dir = gradient_angles[i][j];
+                    pos_dir = gradient_angles[i][j];
+                }
+                else
+                {
+                    std::cout << "Error: Angle out " << this_angle << " of bounds!\n";
+                }
+
+            }
+        }
+
+        // clean up temp matricies
         for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
         {
             delete[] v_temp[i];
@@ -572,7 +615,7 @@ struct Image
         file_out.close ();
     }
 
-    void print_debug_matrix (const std::string& file_name, int** arr, const int& i_start, const int& i_end, const int& j_start, const int& j_end)
+    void print_debug_matrix (const std::string& file_name, double** arr, const int& i_start, const int& i_end, const int& j_start, const int& j_end)
     {
         int buffer = 4;
         std::ofstream file_out ("images-out/" + og_file_name + "/" + og_file_name + "_" + file_name + ".txt");
@@ -580,7 +623,8 @@ struct Image
         {
             for (int j = j_start; j < j_end; j++)
             {
-                file_out << std::right << std::setw(buffer) << arr[i][j] << ' ';
+                if (arr[i][j] == -1) { file_out << std::right << std::setw(buffer) << "." << ' '; }
+                else { file_out << std::right << std::setw(buffer) << (int)arr[i][j] << ' '; }
             }
             file_out << '\n';
         }

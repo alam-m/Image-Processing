@@ -6,18 +6,18 @@
 
 struct Pixel
 {
-    short int red, green, blue, gray;
+    int red, green, blue, gray;
     bool black;
     Pixel ()
     {
         red = green = blue = gray = black = 0;
     }
-    Pixel (const short int& gray)
+    Pixel (const int& gray)
     {
         red = green = blue = black = 0;
         this->gray = gray;
     }
-    Pixel (const short int& red, const short int& green, const short int& blue)
+    Pixel (const int& red, const int& green, const int& blue)
     {
         this->red = red;
         this->green = green;

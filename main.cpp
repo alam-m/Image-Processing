@@ -15,10 +15,7 @@ int main (int argc, char** argv)
     i.print_bi_matrix ();
 
     i.mirror_frame ();
-
     i.gaussian_smooth ();
-    // i.print_matrix ();
-
     i.edge_detect_sobel ();
     
     return 0;
@@ -30,4 +27,6 @@ int main (int argc, char** argv)
 // ./main images-in/skylight.ppm
 // ./main images-in/apollo.ppm
 // ./main images-in/in.ppm
-// ./main images-in/canny_test.ppm
+// ./main images-in/canny_test_sq.ppm
+// ./main images-in/canny_test_oct.ppm
+// ./main images-in/canny_test_diag1.ppm
