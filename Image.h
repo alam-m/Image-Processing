@@ -536,11 +536,17 @@ struct Image
             }
         }
 
+        // move Canny over from temp to pixel matrix
+        max_gray_val = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
                 pixel_matrix[i][j].gray = temp[i][j];
+                if (temp[i][j] > max_gray_val)
+                {
+                    max_gray_val = temp[i][j];
+                }
             }
         }
 
@@ -557,13 +563,99 @@ struct Image
         delete[] h_temp;
         delete[] gradient_angles;
 
-        // max_gray_val = 255;
-        print_gs_matrix (og_file_name + "_aftercanny");
+        print_gs_matrix (og_file_name + "_canny");
+    }
+    
+    void historesis_threshold (const double& lower_percent, const double& upper_percent)
+    {
+        int** temp = new int* [img_height + (ARRAY_PADDING_SIZE * 2)];
+        for (int i = 0; i < img_height + (ARRAY_PADDING_SIZE * 2); i++)
+        {
+            temp [i] = new int [img_width + (ARRAY_PADDING_SIZE * 2)];
+            for (int j = 0; j < img_width + (ARRAY_PADDING_SIZE * 2); j++)
+            {
+                temp [i][j] = 0;
+            }
+        }
+
+        int lower_bound = max_gray_val * lower_percent;
+        int upper_bound = max_gray_val * upper_percent;
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                // def not an edge
+                if (pixel_matrix[i][j].gray < lower_bound)
+                {
+                    temp[i][j] = 0;
+                }
+                // maybe an edge
+                else if (lower_bound <= pixel_matrix[i][j].gray && pixel_matrix[i][j].gray <= upper_bound)
+                {
+                    if (connected_to_edge(i, j, upper_bound))
+                    {
+                        temp[i][j] = max_gray_val;
+                    }
+                    else
+                    {
+                        temp[i][j] = 0;
+                    }
+                }
+                // def an edge
+                else if (pixel_matrix[i][j].gray > upper_bound)
+                {
+                    temp[i][j] = max_gray_val;
+                }
+                else
+                {
+                    std::cout << "error\n";
+                }
+            }
+        }
+
+        for (int i = 0; i < img_height + 2*ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = 0; j < img_width + 2*ARRAY_PADDING_SIZE; j++)
+            {
+                pixel_matrix[i][j].gray = temp[i][j];
+            }
+        }
+
+        print_gs_matrix (og_file_name + "_cannythreshold");
+        delete[] temp;
+    }
+    bool connected_to_edge (const int& i, const int& j, const int& upper_bound)
+    {
+        for (int x = i - 1; x < i + 2; x++)
+        {
+            for (int y = j - 1; y < j + 2; y++)
+            {
+                if (pixel_matrix[x][y].gray > upper_bound)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /*----------------------------------------------------------------------------------------------------*/
     // Hough Transform
+    void hough_transform ()
+    {
 
+    }
+    void buildHoughSpace (const int& i, const int& j)
+    {
+        int angle_degrees = 0;
+        while (angle_degrees < 180)
+        {
+            double angle_radian = (angle_degrees / 180.00) * 3.14159265;
+            int dist = (int)(i*cos(angle_radian) + j*sin(angle_radian) + offset);
+            HoughAry[dist][angleInD]++;
+            angle_degrees++;
+        }        
+    }
 
     /*----------------------------------------------------------------------------------------------------*/
     // debugging functions
@@ -672,6 +764,5 @@ struct Image
         }
         file_out.close ();
     }
-
 };
 #endif

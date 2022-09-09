@@ -1,12 +1,19 @@
 Image processing project.
 
+Sources used:
+https://en.wikipedia.org/wiki/Netpbm
+https://en.wikipedia.org/wiki/Sobel_operator
+https://en.wikipedia.org/wiki/Canny_edge_detector
+https://en.wikipedia.org/wiki/Hough_transform
+
 TODO:
  - Separate .h files for P1, P2, P3
  - Create own extension for P1, P2, P3 image types
+ - Provide support for P4, 5, 6 files
  - Histogram                    ✔
  - Auto Threshold               ✔
  - Convert to Binary            ✔
  - Turn to gray scale           ✔
  - Smooth image w/ Gaussian     ✔
- - Canny's edge detect
- - Hough Transform
+ - Canny's edge detect          ✔
+ - Hough Transform              ✔

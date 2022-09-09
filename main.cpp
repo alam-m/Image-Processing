@@ -16,8 +16,12 @@ int main (int argc, char** argv)
 
     i.mirror_frame ();
     i.gaussian_smooth ();
+
     i.edge_detect_sobel ();
-    
+    i.historesis_threshold (0.05, 0.2);
+
+    i.hough_transform ();
+
     return 0;
 }
 
