@@ -30,7 +30,6 @@ int main (int argc, char** argv)
 // ./main images-in/monument.ppm
 // ./main images-in/skylight.ppm
 // ./main images-in/apollo.ppm
-// ./main images-in/in.ppm
 // ./main images-in/canny_test_sq.ppm
 // ./main images-in/canny_test_oct.ppm
 // ./main images-in/canny_test_diag1.ppm

@@ -2,11 +2,11 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <algorithm>    // sort(), planning on just making my own sorting algo
+#include <algorithm>    // sort()
 #include <filesystem>   // create_directory()
 #include <fstream>      // ifstream, ofstream
 #include <iostream>     // cout
-#include <iomanip>
+#include <iomanip>      // right, setw()
 #include <math.h>       // sqrt(), pow()
 #include <string>       // string
 #include "Pixel.h"
@@ -180,19 +180,19 @@ struct Image
     }
     int get_median ()
     {
-        int* ar = new int [img_height * img_width];
+        int* arr = new int [img_height * img_width];
         int median = 0;
         int index = 0;
         for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                ar[index++] = pixel_matrix[i][j].gray;
+                arr[index++] = pixel_matrix[i][j].gray;
             }
         }
-        std::sort (ar, ar + sizeof (ar) / sizeof (ar[0]));
-        median = ar[(img_height * img_width) / 2];
-        delete[] ar;
+        std::sort (arr, arr + sizeof (arr) / sizeof (arr[0]));
+        median = arr[(img_height * img_width) / 2];
+        delete[] arr;
         return median;
     }
 
@@ -326,7 +326,7 @@ struct Image
     // Sobel Edge detection
     void edge_detect_sobel ()
     {
-        // Sobel mask arrays I got online
+        // Commonly used Sobel masks
         int v_mask_3x3[3][3] = 
         {
              {-1,  0,  1}
@@ -407,7 +407,6 @@ struct Image
         {
             for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
             {
-                // int dist = abs (v_temp[i][j]) + abs (h_temp[i][j]);
                 int dist = sqrt (pow (v_temp[i][j], 2) + pow (h_temp[i][j], 2));
                 pixel_matrix[i][j].gray = dist;
                 dist > max ? max = dist : 0;
@@ -643,18 +642,53 @@ struct Image
     // Hough Transform
     void hough_transform ()
     {
+        int digonal = sqrt (pow (img_height, 2) + pow (img_width, 2));
+        int offset = digonal;
 
+        // init hough array
+        double** hough_arr = new double*[2*digonal];
+        for (int i = 0; i < 2*digonal; i++)
+        {
+            hough_arr[i] = new double[180];
+            for (int j = 0; j < 180; j++)
+            {
+                hough_arr[i][j] = 0;
+            }
+        }
+
+        // build hough space for entire image
+        for (int i = ARRAY_PADDING_SIZE; i < img_height + ARRAY_PADDING_SIZE; i++)
+        {
+            for (int j = ARRAY_PADDING_SIZE; j < img_width + ARRAY_PADDING_SIZE; j++)
+            {
+                if (pixel_matrix[i][j].gray > 0)
+                {
+                    build_hough_space (i, j, hough_arr, offset);
+                }
+            }
+        }
+
+        // print hough space array
+        print_debug_matrix ("hough", hough_arr, 0, 2*digonal, 0, 180, 2);
+
+        // clean up hough array
+        for (int i = 0; i < 2*digonal; i++)
+        {
+            delete[] hough_arr[i];
+        }
+        delete[] hough_arr;
     }
-    void buildHoughSpace (const int& i, const int& j)
+    // used to build hough space for each individual pixel
+    void build_hough_space (const int& i, const int& j, double** hough_arr, const int& offset)
     {
         int angle_degrees = 0;
         while (angle_degrees < 180)
         {
             double angle_radian = (angle_degrees / 180.00) * 3.14159265;
             int dist = (int)(i*cos(angle_radian) + j*sin(angle_radian) + offset);
-            HoughAry[dist][angleInD]++;
+            hough_arr[dist][angle_degrees]++;
             angle_degrees++;
-        }        
+        }
     }
 
     /*----------------------------------------------------------------------------------------------------*/
@@ -751,7 +785,10 @@ struct Image
 
     void print_debug_matrix (const std::string& file_name, double** arr, const int& i_start, const int& i_end, const int& j_start, const int& j_end)
     {
-        int buffer = 4;
+        print_debug_matrix (file_name, arr, i_start, i_end, j_start, j_end, 4);
+    }
+    void print_debug_matrix (const std::string& file_name, double** arr, const int& i_start, const int& i_end, const int& j_start, const int& j_end, const int& buffer)
+    {
         std::ofstream file_out ("images-out/" + og_file_name + "/" + og_file_name + "_" + file_name + ".txt");
         for (int i = i_start; i < i_end; i++)
         {
